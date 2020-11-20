@@ -78,7 +78,7 @@ public class MemberController_Test {
 		
 		
 	// ====================== 로그인 Test ====================================
-		// 1. 로그인 성공
+		// 1. 로그인 성공 => Token 발급 확인
 		@Test
 		@Order(3)
 		public void 로그인_성공_테스트() throws Exception {
@@ -122,7 +122,5 @@ public class MemberController_Test {
 				.andDo(print())
 				.andExpect(status().isBadRequest());
 		}
-	// ====================== 카테고리 목록 Test ===============================
-		// 1. 성공 => 한식, 중식, 양식, 분식
-		// 2. 실패 => 일식
+
 }

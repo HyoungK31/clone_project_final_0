@@ -37,7 +37,7 @@ public class MemberService {
 	}
 	
 	/**
-	 * 아이디 조회용(로그인,회원가입 중복체크)
+	 * 아이디 확인용(로그인,회원가입 중복체크)
 	 * @param email
 	 * @return
 	 */
@@ -54,6 +54,7 @@ public class MemberService {
 	public TokenDto memberLogin(Member memberLogin) throws CommonException {
 		TokenDto newMember = null;
 		Member member = this.findByEmail(memberLogin.getEmail());
+		//System.out.println(member);
 		if(member != null) {
 			if(member.getPassword().equals(memberLogin.getPassword())) {
 				

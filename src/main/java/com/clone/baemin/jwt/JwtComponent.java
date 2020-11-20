@@ -128,8 +128,20 @@ public class JwtComponent {
 	 * @throws CommonException
 	 */
 	public Boolean isTokenExpired(String token, TOKEN_TYPE tokenType) throws CommonException {
-
-		Date date = this.extractExpiration(token, tokenType);
+		// 수정 전 => Token 재발급 Test 시 Token 만료 사실 여부를 담을 수 없음 => 바로 CommonException => 만료 error 발생
+		//Date date = this.extractExpiration(token, tokenType);
+		//return date.before(new Date());
+		
+		// 수정 후 => 토큰 만료 시 CommonException.ExpiredJwtException 발생시 true 리턴
+		Date date;
+		try {
+			date = this.extractExpiration(token, tokenType);
+		} catch (CommonException e) {
+			if( e.getEnumBaseException() == EnumSecurityException.ExpiredJwtException) {
+				return true;
+			}
+			throw new CommonException(e, e.getEnumBaseException());
+		}
 		return date.before(new Date());
 	}
 
@@ -177,9 +189,12 @@ public class JwtComponent {
 	private String createToken(Map<String, Object> claims, String subject, TOKEN_TYPE tokenType) {
 
 		TokenTypeData ttd = this.makeTokenTypeData(tokenType);
-
-		LocalDateTime d = LocalDateTime.now().plusMinutes(ttd.getTime());
-
+		
+		// 분
+		//LocalDateTime d = LocalDateTime.now().plusMinutes(ttd.getTime());
+		// 초
+		LocalDateTime d = LocalDateTime.now().plusSeconds(ttd.getTime());
+		
 		return Jwts.builder()
 					.setClaims(claims)	// Claims 설정
 					.setSubject(subject)	// 토큰용도
@@ -264,8 +279,8 @@ public class JwtComponent {
 		// 토큰이 만료되지 않았어도 공격으로 인해 중간에 토큰 내부의 자료가 변경되었을수 있다
 		// TODO [질문] 사용여부? 
 		
-		final String username = this.extractUsername(token, tokenType);
-		return (username.equals(member.getEmail()) && !isTokenExpired(token, tokenType));
+		final String membername = this.extractUsername(token, tokenType);
+		return (membername.equals(member.getEmail()) && !isTokenExpired(token, tokenType));
 	}
 	
 }
